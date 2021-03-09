@@ -25,3 +25,49 @@ library(lubridate)
 weekly_sales$my_year = year(weekly_sales$Date)
 
 
+library(stringr)
+# String functions primarily start with str_
+
+weekly_sales <- weekly_sales %>% 
+  mutate(Flatbread = str_detect(Description, "FLATBREAD"))
+
+
+weekly_sales <- weekly_sales %>% 
+  mutate(Chicken = str_detect(Description, regex("chicken", ignore_case = TRUE)),
+         Bacon = str_detect(Description, regex("bacon", ignore_case = TRUE)),
+         Turkey = str_detect(Description, regex("turkey", ignore_case = TRUE)))
+
+# everything() as a selector will bring remaining columns to assist with reordering
+
+weekly_sales <- weekly_sales %>% 
+  select(INV_NUMBER, Store_num, Description, Flatbread, Bacon, Chicken, Turkey, everything())
+
+
+# Filtering similar to python
+
+weekly_sales[weekly_sales$Sold > 100,]
+
+mean(weekly_sales$Sales[weekly_sales$Flatbread])
+
+# piping doesnt work in this situation
+weekly_sales %>% mean(
+  filter(Chicken==TRUE & Bacon == TRUE)$Sales
+)
+
+# This filtering method works
+mean(
+  filter(
+  weekly_sales,
+  Chicken==TRUE,
+  Bacon==TRUE
+  )$Sales
+)
+
+
+
+
+
+
+
+
+
